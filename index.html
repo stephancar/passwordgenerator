@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>steefware.com — Password Generator</title>
+    <meta name="description" content="A minimal, deterministic password generator that runs locally in your browser." />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-white text-black antialiased">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <header class="flex items-center justify-between py-6">
+        <a
+          href="https://steefware.com"
+          class="inline-flex items-center gap-2 rounded-xl border-2 border-black px-3 py-2 text-sm font-black tracking-tight shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+          aria-label="steefware home"
+        >
+          <span class="inline-block h-2 w-2 rounded-full bg-fuchsia-500"></span>
+          steefware.com
+        </a>
+
+        <nav class="flex items-center gap-3 text-sm font-semibold">
+          <a
+            href="#"
+            class="rounded-lg px-2 py-1 underline underline-offset-4 decoration-2 decoration-black/30 transition-colors duration-150 hover:decoration-black focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+            >about</a
+          >
+          <a
+            href="#tool"
+            class="rounded-lg px-2 py-1 underline underline-offset-4 decoration-2 decoration-black/30 transition-colors duration-150 hover:decoration-black focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+            >apps</a
+          >
+        </nav>
+      </header>
+
+      <!-- Main -->
+      <main id="tool" class="pb-14 pt-6">
+        <!-- Hero / Title card -->
+        <section class="relative">
+          <div class="rounded-3xl border-2 border-black p-6 shadow-[8px_8px_0_0_#000] sm:p-10">
+            <h1 class="text-balance text-4xl font-black tracking-tight sm:text-5xl">
+              Password Generator
+            </h1>
+
+            <div class="mt-4 space-y-2 text-base font-semibold sm:text-lg">
+              <p>Generate strong passwords locally in your browser. Nothing is sent anywhere.</p>
+            </div>
+
+            <div
+              class="pointer-events-none absolute -right-2 -top-2 hidden h-10 w-10 rotate-6 rounded-2xl border-2 border-black bg-amber-300 shadow-[4px_4px_0_0_#000] sm:block"
+              aria-hidden="true"
+            ></div>
+          </div>
+        </section>
+
+        <!-- App layout -->
+        <section class="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <!-- Generator -->
+          <section class="lg:col-span-2">
+            <div class="rounded-3xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_#000] sm:p-8">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 class="text-xl font-black tracking-tight">Generate</h2>
+                  <p class="mt-1 text-sm font-semibold text-black/70">
+                    Transparent settings. Deterministic rules. Cryptographically secure randomness.
+                  </p>
+                </div>
+
+                <div
+                  id="entropyBadge"
+                  class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]"
+                >
+                  Entropy: —
+                </div>
+              </div>
+
+              <!-- Output -->
+              <div class="mt-6 grid gap-3">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+                  <div
+                    id="password"
+                    class="min-h-[52px] w-full rounded-2xl border-2 border-black bg-white px-4 py-3 font-mono text-sm font-black tracking-tight shadow-[4px_4px_0_0_#000] overflow-auto"
+                    aria-live="polite"
+                  ></div>
+
+                  <button
+                    id="copyBtn"
+                    class="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-white px-4 py-3 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                    type="button"
+                    aria-label="Copy password"
+                    title="Copy"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 9h11v11H9V9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Copy
+                  </button>
+
+                  <button
+                    id="genBtn"
+                    class="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-fuchsia-500 px-4 py-3 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                    type="button"
+                    aria-label="Generate password"
+                    title="Generate"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M21 12a9 9 0 0 1-15.3 6.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M3 12A9 9 0 0 1 18.3 5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M18 5V2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M6 19v3H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Generate
+                  </button>
+                </div>
+
+                <div id="statusHint" class="min-h-[18px] text-sm font-semibold text-black/70" role="status"></div>
+              </div>
+
+              <div class="mt-8 grid gap-6">
+                <!-- Length -->
+                <div class="rounded-2xl border-2 border-black bg-white p-5 shadow-[6px_6px_0_0_#000]">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <label for="length" class="text-sm font-black uppercase tracking-widest">Length</label>
+                      <p class="mt-1 text-sm font-semibold text-black/70">Choose 6–128 characters</p>
+                    </div>
+
+                    <div class="inline-flex items-center gap-3">
+                      <span class="rounded-full border-2 border-black bg-white px-3 py-1 font-mono text-xs font-black shadow-[3px_3px_0_0_#000]" id="lenVal">20</span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                    <input
+                      id="length"
+                      type="range"
+                      min="6"
+                      max="128"
+                      value="20"
+                      class="w-full accent-black"
+                      aria-label="Password length"
+                    />
+                  </div>
+                </div>
+
+                <!-- Options -->
+                <div>
+                  <h3 class="text-sm font-black uppercase tracking-widest">Options</h3>
+
+                  <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2" role="group" aria-label="Password options">
+                    <!-- Option card template -->
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Uppercase</div>
+                          <div class="text-xs font-semibold text-black/70">A–Z</div>
+                        </div>
+                        <input id="upper" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Lowercase</div>
+                          <div class="text-xs font-semibold text-black/70">a–z</div>
+                        </div>
+                        <input id="lower" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Numbers</div>
+                          <div class="text-xs font-semibold text-black/70">0–9</div>
+                        </div>
+                        <input id="nums" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Symbols</div>
+                          <div class="text-xs font-semibold text-black/70">!@#$…</div>
+                        </div>
+                        <input id="syms" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Exclude ambiguous</div>
+                          <div class="text-xs font-semibold text-black/70">O0, l1, I|</div>
+                        </div>
+                        <input id="noAmb" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Avoid repeats</div>
+                          <div class="text-xs font-semibold text-black/70">Unique characters</div>
+                        </div>
+                        <input id="noRepeat" type="checkbox" class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Include spaces</div>
+                          <div class="text-xs font-semibold text-black/70">Add “ ” to pool</div>
+                        </div>
+                        <input id="spaces" type="checkbox" class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+
+                    <div class="rounded-2xl border-2 border-black bg-white p-4 shadow-[6px_6px_0_0_#000]">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-sm font-black">Require each type</div>
+                          <div class="text-xs font-semibold text-black/70">At least one of each selected</div>
+                        </div>
+                        <input id="requireEach" type="checkbox" checked class="h-5 w-5 accent-black" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      id="resetBtn"
+                      class="inline-flex items-center justify-center rounded-2xl border-2 border-black bg-white px-4 py-3 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                      type="button"
+                    >
+                      Reset
+                    </button>
+                    <p class="text-sm font-semibold text-black/70">
+                      Tip: use a password manager for long random passwords.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Strength -->
+          <aside>
+            <div class="rounded-3xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_#000] sm:p-8">
+              <h2 class="text-xl font-black tracking-tight">Strength</h2>
+              <p class="mt-1 text-sm font-semibold text-black/70">Estimate based on length & character set.</p>
+
+              <div class="mt-6 rounded-2xl border-2 border-black bg-white p-5 shadow-[6px_6px_0_0_#000]">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div id="strengthLabel" class="text-base font-black">—</div>
+                    <div id="strengthDetail" class="mt-1 text-sm font-semibold text-black/70">—</div>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span id="kpiLen" class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]">Len: —</span>
+                    <span id="kpiPool" class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]">Pool: —</span>
+                  </div>
+                </div>
+
+                <div class="mt-4" aria-label="Strength meter">
+                  <div class="h-4 w-full rounded-full border-2 border-black bg-white shadow-[3px_3px_0_0_#000] overflow-hidden">
+                    <div id="strengthBar" class="h-full w-0 bg-amber-300 transition-[width] duration-200"></div>
+                  </div>
+                </div>
+
+                <p class="mt-4 text-sm font-semibold text-black/70" id="notes">
+                  Entropy is a rough guide. Real-world strength depends on how attackers guess and whether the password is unique.
+                </p>
+              </div>
+
+              <div class="mt-6 rounded-2xl border-2 border-black bg-white p-5 shadow-[6px_6px_0_0_#000]">
+                <h3 class="text-sm font-black uppercase tracking-widest">Notes</h3>
+                <ul class="mt-3 space-y-2 text-sm font-semibold text-black/80">
+                  <li>• Generated with <span class="font-black">crypto.getRandomValues</span>.</li>
+                  <li>• “Avoid repeats” reduces the usable pool at larger lengths.</li>
+                  <li>• “Require each type” guarantees coverage, then shuffles.</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      (() => {
+        // Character sets
+        const SETS = {
+          upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          lower: "abcdefghijklmnopqrstuvwxyz",
+          nums:  "0123456789",
+          syms:  "!@#$%^&*()-_=+[]{};:,.<>?/\\\\|`~'\\\"",
+          space: " "
+        };
+
+        const AMBIG = new Set(["O","0","o","I","l","1","|"]);
+
+        // Elements
+        const $ = (id) => document.getElementById(id);
+        const el = {
+          password: $("password"),
+          status: $("statusHint"),
+          copyBtn: $("copyBtn"),
+          genBtn: $("genBtn"),
+          resetBtn: $("resetBtn"),
+          length: $("length"),
+          lenVal: $("lenVal"),
+          upper: $("upper"),
+          lower: $("lower"),
+          nums: $("nums"),
+          syms: $("syms"),
+          noAmb: $("noAmb"),
+          noRepeat: $("noRepeat"),
+          spaces: $("spaces"),
+          requireEach: $("requireEach"),
+          entropyBadge: $("entropyBadge"),
+          strengthBar: $("strengthBar"),
+          strengthLabel: $("strengthLabel"),
+          strengthDetail: $("strengthDetail"),
+          kpiLen: $("kpiLen"),
+          kpiPool: $("kpiPool"),
+        };
+
+        function secureRandomInt(maxExclusive) {
+          const arr = new Uint32Array(1);
+          const limit = Math.floor(0xFFFFFFFF / maxExclusive) * maxExclusive;
+          while (true) {
+            crypto.getRandomValues(arr);
+            const x = arr[0];
+            if (x < limit) return x % maxExclusive;
+          }
+        }
+
+        function shuffleInPlace(a) {
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = secureRandomInt(i + 1);
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        }
+
+        function buildPools(opts) {
+          const pools = [];
+          if (opts.upper) pools.push(SETS.upper);
+          if (opts.lower) pools.push(SETS.lower);
+          if (opts.nums)  pools.push(SETS.nums);
+          if (opts.syms)  pools.push(SETS.syms);
+          if (opts.spaces) pools.push(SETS.space);
+          return pools;
+        }
+
+        function applyAmbiguousFilter(str, excludeAmbiguous) {
+          if (!excludeAmbiguous) return str;
+          let out = "";
+          for (const ch of str) if (!AMBIG.has(ch)) out += ch;
+          return out;
+        }
+
+        function uniqueChars(str) {
+          return Array.from(new Set(str.split(""))).join("");
+        }
+
+        function pickChar(fromStr) {
+          if (!fromStr || fromStr.length === 0) return "";
+          return fromStr[secureRandomInt(fromStr.length)];
+        }
+
+        function generatePassword(opts) {
+          const length = opts.length;
+          const pools = buildPools(opts).map(p => applyAmbiguousFilter(p, opts.noAmb));
+
+          if (pools.length === 0) {
+            throw new Error("Select at least one character type.");
+          }
+
+          let master = pools.join("");
+          master = applyAmbiguousFilter(master, opts.noAmb);
+          if (opts.noRepeat) master = uniqueChars(master);
+
+          if (opts.noRepeat && uniqueChars(master).length < length) {
+            throw new Error("Not enough unique characters for this length with 'Avoid repeats' enabled.");
+          }
+
+          const requiredCount = (opts.requireEach ? pools.length : 0);
+          if (requiredCount > length) {
+            throw new Error("Length is too short for 'Require each type'. Increase length or disable it.");
+          }
+
+          const chars = [];
+
+          if (opts.requireEach) {
+            for (const p of pools) {
+              let pool = p;
+              if (opts.noRepeat) pool = pool.split("").filter(c => !chars.includes(c)).join("");
+              const c = pickChar(pool);
+              if (!c) throw new Error("Unable to satisfy constraints. Try disabling 'Avoid repeats' or 'Exclude ambiguous'.");
+              chars.push(c);
+            }
+          }
+
+          while (chars.length < length) {
+            let pool = master;
+            if (opts.noRepeat) pool = pool.split("").filter(c => !chars.includes(c)).join("");
+            const c = pickChar(pool);
+            if (!c) throw new Error("Unable to satisfy constraints. Try disabling 'Avoid repeats' or increasing pool.");
+            chars.push(c);
+          }
+
+          shuffleInPlace(chars);
+          return chars.join("");
+        }
+
+        function estimateEntropyBits(length, poolSize, noRepeat) {
+          if (poolSize <= 1 || length <= 0) return 0;
+          const log2 = (x) => Math.log(x) / Math.log(2);
+
+          if (!noRepeat) return length * log2(poolSize);
+
+          let bits = 0;
+          for (let i = 0; i < length; i++) {
+            const n = poolSize - i;
+            if (n <= 0) break;
+            bits += log2(n);
+          }
+          return bits;
+        }
+
+        function strengthFromEntropy(bits) {
+          if (bits < 35) return { label: "Weak", detail: "Easy to guess/brute-force", pct: 25 };
+          if (bits < 55) return { label: "Fair", detail: "Okay for low-risk accounts", pct: 45 };
+          if (bits < 80) return { label: "Strong", detail: "Good for most accounts", pct: 70 };
+          if (bits < 110) return { label: "Very strong", detail: "Great for high-value accounts", pct: 88 };
+          return { label: "Excellent", detail: "Overkill (in a good way)", pct: 100 };
+        }
+
+        function getOpts() {
+          return {
+            length: Number(el.length.value),
+            upper: el.upper.checked,
+            lower: el.lower.checked,
+            nums: el.nums.checked,
+            syms: el.syms.checked,
+            noAmb: el.noAmb.checked,
+            noRepeat: el.noRepeat.checked,
+            spaces: el.spaces.checked,
+            requireEach: el.requireEach.checked
+          };
+        }
+
+        function poolInfo(opts) {
+          const pools = buildPools(opts).map(p => applyAmbiguousFilter(p, opts.noAmb));
+          let master = pools.join("");
+          master = applyAmbiguousFilter(master, opts.noAmb);
+          if (opts.noRepeat) master = uniqueChars(master);
+          return { pools, master, poolSize: uniqueChars(master).length };
+        }
+
+        function setStatus(msg, ok=true) {
+          el.status.textContent = msg || "";
+          el.status.classList.remove("text-black/70","text-red-600");
+          el.status.classList.add(ok ? "text-black/70" : "text-red-600");
+        }
+
+        async function copyToClipboard(text) {
+          try {
+            await navigator.clipboard.writeText(text);
+            setStatus("Copied to clipboard.");
+          } catch {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+              document.execCommand("copy");
+              setStatus("Copied to clipboard.");
+            } catch {
+              setStatus("Copy failed. Select and copy manually.", false);
+            } finally {
+              document.body.removeChild(ta);
+            }
+          }
+        }
+
+        function render() {
+          const opts = getOpts();
+          el.lenVal.textContent = String(opts.length);
+
+          const { poolSize } = poolInfo(opts);
+          const bits = estimateEntropyBits(opts.length, poolSize, opts.noRepeat);
+          const s = strengthFromEntropy(bits);
+
+          el.entropyBadge.textContent = `Entropy: ${bits.toFixed(1)} bits`;
+          el.strengthLabel.textContent = s.label;
+          el.strengthDetail.textContent = s.detail;
+          el.strengthBar.style.width = `${s.pct}%`;
+          el.kpiLen.textContent = `Len: ${opts.length}`;
+          el.kpiPool.textContent = `Pool: ${poolSize}`;
+
+          // Color cue (simple, brutal)
+          el.strengthBar.classList.remove("bg-amber-300","bg-fuchsia-500","bg-black");
+          if (s.pct < 40) el.strengthBar.classList.add("bg-black");
+          else if (s.pct < 75) el.strengthBar.classList.add("bg-amber-300");
+          else el.strengthBar.classList.add("bg-fuchsia-500");
+
+          try {
+            const pw = generatePassword(opts);
+            el.password.textContent = pw;
+            setStatus("");
+          } catch (e) {
+            el.password.textContent = "";
+            setStatus(e.message, false);
+          }
+        }
+
+        const inputs = [el.length, el.upper, el.lower, el.nums, el.syms, el.noAmb, el.noRepeat, el.spaces, el.requireEach];
+        inputs.forEach(i => i.addEventListener("input", render));
+
+        el.genBtn.addEventListener("click", render);
+
+        el.copyBtn.addEventListener("click", () => {
+          const text = el.password.textContent || "";
+          if (!text) return setStatus("Nothing to copy yet.", false);
+          copyToClipboard(text);
+        });
+
+        el.resetBtn.addEventListener("click", () => {
+          el.length.value = 20;
+          el.upper.checked = true;
+          el.lower.checked = true;
+          el.nums.checked = true;
+          el.syms.checked = true;
+          el.noAmb.checked = true;
+          el.noRepeat.checked = false;
+          el.spaces.checked = false;
+          el.requireEach.checked = true;
+          render();
+          setStatus("Reset to defaults.");
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
